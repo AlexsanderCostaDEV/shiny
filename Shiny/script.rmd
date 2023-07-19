@@ -1,0 +1,324 @@
+---
+title: "Menu"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(leaflet)
+library(raster)
+library(sp)
+library(rgdal)
+
+```
+
+# Análise Exploratória
+
+Column {data-width=200}
+-----------------------------------------------------------------------
+
+### Escolha uma opção:
+
+```{r}
+# Adicione um botão de input para selecionar a opção desejada
+shiny::radioButtons(inputId = "opcao",
+                    label = "",
+                    choices = c("Médias", "Desvio Padrão", "Máximos"),
+                    selected = "Médias")
+
+##Entrando com os dados
+dados <- read.csv2("dados.csv")
+
+## Função para calcular a estatística desejada
+calcularEstatistica <- function(opcao) {
+  if (opcao == "Médias") {
+    dsub = aggregate(PrecMax ~ Long + Lat, FUN = mean, data = dados)
+  } else if (opcao == "Desvio Padrão") {
+    dsub = aggregate(PrecMax ~ Long + Lat, FUN = sd, data = dados)
+  } else if (opcao == "Máximos") {
+    dsub = aggregate(PrecMax ~ Long + Lat, FUN = max, data = dados)
+  }
+  return(dsub)
+}
+
+## Criando a paleta de cores com base na estatística selecionada
+pal <- reactive({
+  opcao <- input$opcao
+  dsub <- calcularEstatistica(opcao)
+  if (opcao == "Médias") {
+    colorNumeric("RdYlBu", dsub$PrecMax)
+  } else if (opcao == "Desvio Padrão") {
+    colorNumeric("RdYlBu", dsub$PrecMax)
+  } else if (opcao == "Máximos") {
+    colorNumeric("RdYlBu", dsub$PrecMax)
+  }
+})
+
+```
+
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Paraíba
+
+```{r}
+
+renderLeaflet({
+  opcao <- input$opcao
+  dsub <- calcularEstatistica(opcao)
+  
+  # Gerar os limites mínimos e máximos para a escala de cores
+valor_min <- min(dsub$PrecMax)
+valor_max <- max(dsub$PrecMax)
+
+# Gerar uma paleta de cores
+palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
+             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
+
+  mapa <- leaflet(dsub) %>%
+    setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
+    # input$zoom
+    
+    addProviderTiles("Esri.WorldImagery") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~Long,
+    lat = ~Lat,
+    radius = 8,
+    color = ~PrecMax,
+    stroke = FALSE,
+    fillOpacity = 0.9,
+    fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PrecMax)
+  ) %>%
+    addLegend(position = "topleft",
+            pal = colorBin(palette, domain = c(valor_min, valor_max)),
+            values = dsub$PrecMax,
+            title = "chuva (mm)")
+    
+  # Renderize o mapa
+  mapa
+})
+
+```
+
+# 2 anos
+
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Paraíba - Período de Retorno de 2 anos
+
+```{r}
+
+renderLeaflet({
+  dados <- read.csv2("Prec2anosteste.csv")
+  
+  # Gerar os limites mínimos e máximos para a escala de cores
+valor_min <- 30
+valor_max <- 230
+
+# Gerar uma paleta de cores
+palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
+             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
+
+  mapa <- leaflet(dados) %>%
+    setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
+    # input$zoom
+    
+    addProviderTiles("Esri.WorldImagery") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~Long,
+    lat = ~Lat,
+    radius = 2,
+    color = ~PredSVM,
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
+  ) %>%
+    addLegend(position = "topleft",
+            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            values = dados$PredSVM,
+            title = "chuva (mm)")
+    
+  # Renderize o mapa
+  mapa
+})
+
+```
+
+# 5 anos
+
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Paraíba - Período de Retorno de 5 anos
+
+```{r}
+
+renderLeaflet({
+  dados <- read.csv2("alexsanderDADOS-5anos.csv")
+  
+  # Gerar os limites mínimos e máximos para a escala de cores
+#valor_min <- min(dados$PredSVM)
+#valor_max <- max(dados$PredSVM)
+
+  valor_min <- 30
+  valor_max <- 230
+  
+  
+# Gerar uma paleta de cores
+palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
+             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
+
+  mapa <- leaflet(dados) %>%
+    setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
+    # input$zoom
+    
+    addProviderTiles("Esri.WorldImagery") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~Long,
+    lat = ~Lat,
+    radius = 2,
+    color = ~PredSVM,
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
+  ) %>%
+    addLegend(position = "topleft",
+            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            values = dados$PredSVM,
+            title = "chuva (mm)")
+    
+  # Renderize o mapa
+  mapa
+})
+
+```
+
+# 10 anos
+
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Paraíba - Período de Retorno de 10 anos
+
+```{r}
+
+renderLeaflet({
+  dados <- read.csv2("Prec10anos.csv")
+  
+  # Gerar os limites mínimos e máximos para a escala de cores
+valor_min <- 30
+valor_max <- 230
+
+# Gerar uma paleta de cores
+palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
+             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
+
+  mapa <- leaflet(dados) %>%
+    setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
+    # input$zoom
+    
+    addProviderTiles("Esri.WorldImagery") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~Long,
+    lat = ~Lat,
+    radius = 2,
+    color = ~PredSVM,
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
+  ) %>%
+    addLegend(position = "topleft",
+            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            values = dados$PredSVM,
+            title = "chuva (mm)")
+    
+  # Renderize o mapa
+  mapa
+})
+
+```
+
+# 50 anos
+
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Paraíba - Período de Retorno de 50 anos
+
+```{r}
+
+renderLeaflet({
+  dados <- read.csv2("alexsanderDADOS-50anos.csv")
+  
+  # Gerar os limites mínimos e máximos para a escala de cores
+#valor_min <- min(dados$PredSVM)
+#valor_max <- max(dados$PredSVM)
+
+  valor_min <- 30
+  valor_max <- 230
+  
+  
+# Gerar uma paleta de cores
+palette <- c('#8B0000', '#B22222', '#FA8072', '#FF0000', '#FF4500', '#FF8C00', '#FFA500', '#FFD700', '#FFFF00', '#ADFF2F',
+'#7FFF00', '#00FF00', '#008000', '#006400', '#00CED1', '#00FFFF', '#00BFFF', '#4169E1', '#0000ff', '#000080') # Use uma paleta de cores de sua preferência
+
+  mapa <- leaflet(dados) %>%
+    setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
+    # input$zoom
+    
+    addProviderTiles("Esri.WorldImagery") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~Long,
+    lat = ~Lat,
+    radius = 2,
+    color = ~PredSVM,
+    stroke = FALSE,
+    fillOpacity = 0.8,
+    fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
+  ) %>%
+    addLegend(position = "topleft",
+            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            values = dados$PredSVM,
+            title = "chuva (mm)")
+    
+  # Renderize o mapa
+  mapa
+})
+
+```
+
+
+# Sobre os autores
+
+- Alexsander Souza da Costa
+- UFGD - Universidade Federal da Grande Dourados
+- alexsander0souza@gmail.com
+
+------------------------------------------------
+
+- Elias Silva de Medeiros
+- UFGD - Universidade Federal da Grande Dourados
+- eliasmedeiros@ufgd.edu.br
+
+------------------------------------------------
+
+- Vanderson Hafemann Fragal
+- UFGD - Universidade Federal da Grande Dourados
+- eliasmedeiros@ufgd.edu.br
+
+------------------------------------------------
