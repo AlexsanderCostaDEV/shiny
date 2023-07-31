@@ -1,5 +1,5 @@
 ---
-title: "Menu"
+title: "Shiny"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -273,8 +273,8 @@ renderLeaflet({
   
   
 # Gerar uma paleta de cores
-palette <- c('#8B0000', '#B22222', '#FA8072', '#FF0000', '#FF4500', '#FF8C00', '#FFA500', '#FFD700', '#FFFF00', '#ADFF2F',
-'#7FFF00', '#00FF00', '#008000', '#006400', '#00CED1', '#00FFFF', '#00BFFF', '#4169E1', '#0000ff', '#000080') # Use uma paleta de cores de sua preferência
+palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
+             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
 
   mapa <- leaflet(dados) %>%
     setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
