@@ -120,8 +120,8 @@ renderLeaflet({
   dados <- read.csv2("Prec2anosteste.csv")
   
   # Gerar os limites mínimos e máximos para a escala de cores
-valor_min <- 30
-valor_max <- 230
+valor_min <- min(dados$PredSVM)
+valor_max <- max(dados$PredSVM)
 
 # Gerar uma paleta de cores
 palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
@@ -143,7 +143,7 @@ palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
     fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
   ) %>%
     addLegend(position = "topleft",
-            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            pal = colorBin(palette, domain = c(valor_min, valor_max)),
             values = dados$PredSVM,
             title = "chuva (mm)")
     
@@ -167,12 +167,8 @@ renderLeaflet({
   dados <- read.csv2("alexsanderDADOS-5anos.csv")
   
   # Gerar os limites mínimos e máximos para a escala de cores
-#valor_min <- min(dados$PredSVM)
-#valor_max <- max(dados$PredSVM)
-
-  valor_min <- 30
-  valor_max <- 230
-  
+valor_min <- min(dados$PredSVM)
+valor_max <- max(dados$PredSVM)
   
 # Gerar uma paleta de cores
 palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
@@ -194,7 +190,7 @@ palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
     fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
   ) %>%
     addLegend(position = "topleft",
-            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            pal = colorBin(palette, domain = c(valor_min, valor_max)),
             values = dados$PredSVM,
             title = "chuva (mm)")
     
@@ -218,12 +214,11 @@ renderLeaflet({
   dados <- read.csv2("Prec10anos.csv")
   
   # Gerar os limites mínimos e máximos para a escala de cores
-valor_min <- 30
-valor_max <- 230
+valor_min <- min(dados$PredSVM)
+valor_max <- max(dados$PredSVM)
 
 # Gerar uma paleta de cores
-palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
-             '#abd9e9','#74add1','#4575b4','#313695') # Use uma paleta de cores de sua preferência
+palette <- c("#ff0000", "#ff8c00", "#ffff00", "#00ff7f", "#0000ff") # Use uma paleta de cores de sua preferência
 
   mapa <- leaflet(dados) %>%
     setView(lng = -36.538146, lat = -7.406634, zoom = 8) %>%
@@ -241,7 +236,7 @@ palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
     fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
   ) %>%
     addLegend(position = "topleft",
-            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            pal = colorBin(palette, domain = c(valor_min, valor_max)),
             values = dados$PredSVM,
             title = "chuva (mm)")
     
@@ -265,12 +260,8 @@ renderLeaflet({
   dados <- read.csv2("alexsanderDADOS-50anos.csv")
   
   # Gerar os limites mínimos e máximos para a escala de cores
-#valor_min <- min(dados$PredSVM)
-#valor_max <- max(dados$PredSVM)
-
-  valor_min <- 30
-  valor_max <- 230
-  
+valor_min <- min(dados$PredSVM)
+valor_max <- max(dados$PredSVM)
   
 # Gerar uma paleta de cores
 palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
@@ -292,7 +283,7 @@ palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
     fillColor = ~colorBin(palette, domain = c(valor_min, valor_max))(PredSVM)
   ) %>%
     addLegend(position = "topleft",
-            pal = colorBin(palette, domain = c(valor_min, valor_max), bins = seq(valor_min, valor_max, 20)),
+            pal = colorBin(palette, domain = c(valor_min, valor_max)),
             values = dados$PredSVM,
             title = "chuva (mm)")
     
@@ -301,24 +292,3 @@ palette <- c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf',
 })
 
 ```
-
-
-# Sobre os autores
-
-- Alexsander Souza da Costa
-- UFGD - Universidade Federal da Grande Dourados
-- alexsander0souza@gmail.com
-
-------------------------------------------------
-
-- Elias Silva de Medeiros
-- UFGD - Universidade Federal da Grande Dourados
-- eliasmedeiros@ufgd.edu.br
-
-------------------------------------------------
-
-- Vanderson Hafemann Fragal
-- UFGD - Universidade Federal da Grande Dourados
-- eliasmedeiros@ufgd.edu.br
-
-------------------------------------------------
